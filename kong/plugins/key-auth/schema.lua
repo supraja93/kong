@@ -52,5 +52,9 @@ return {
       type = "boolean",
       default = false,
     },
+    authenticate_preflight = {
+      type = "boolean",
+      default = true,
+    },
   }
 }
