@@ -53,7 +53,8 @@ function _M.plugin_config_iterator(dao, plugin_name)
   local coro
   if dao.db_type == "cassandra" then
     coro = coroutine.create(function()
-      for rows, err in dao.db.cluster:iterate([[
+      local coordinator = dao.db:get_coordinator()
+      for rows, err in coordinator:iterate([[
                 SELECT * FROM plugins WHERE name = ']] .. plugin_name .. [[';
               ]]) do
         if err then
@@ -78,7 +79,7 @@ function _M.plugin_config_iterator(dao, plugin_name)
 
   else
     coro = coroutine.create(function()
-      return nil, nil, "unknown database type: "..tostring(dao.db_type)
+      return nil, nil, "unknown database type: " .. tostring(dao.db_type)
     end)
   end
 

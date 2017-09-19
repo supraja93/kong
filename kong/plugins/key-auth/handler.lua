@@ -157,7 +157,7 @@ function KeyAuthHandler:access(conf)
   KeyAuthHandler.super.access(self)
 
   -- check if preflight request and whether it should be authenticated
-  if get_method() == "OPTIONS" and not conf.run_on_preflight then
+  if not conf.run_on_preflight and get_method() == "OPTIONS" then
     return
   end
  
