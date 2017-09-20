@@ -48,6 +48,7 @@ function _M.plugin_config_iterator(dao, plugin_name)
         return dao.plugins:update(row, {id = row.id})
       end)
     end
+    return true
   end
 
   local coro
@@ -61,7 +62,7 @@ function _M.plugin_config_iterator(dao, plugin_name)
           return nil, nil, err
         end
 
-        run_rows(rows)
+        assert(run_rows(rows))
       end
     end)
 
@@ -74,7 +75,7 @@ function _M.plugin_config_iterator(dao, plugin_name)
         return nil, nil, err
       end
 
-      run_rows(rows)
+      assert(run_rows(rows))
     end)
 
   else
