@@ -1,5 +1,7 @@
-local _M = {}
 local json_decode = require("cjson.safe").decode
+
+
+local _M = {}
 
 
 -- Iterator to update plugin configurations.
@@ -92,5 +94,6 @@ function _M.plugin_config_iterator(dao, plugin_name)
     return true, config, update
   end
 end
+
 
 return _M
