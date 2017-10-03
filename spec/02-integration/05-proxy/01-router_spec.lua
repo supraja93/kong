@@ -178,6 +178,55 @@ describe("Router", function()
     end)
   end)
 
+  describe("URI regexes order of evaluation", function()
+    setup(function()
+      insert_apis {
+        {
+          name = "api-1",
+          uris = { [[/status/(re)]] },
+          upstream_url = helpers.mock_upstream_url .. "/status/200",
+        },
+        {
+          name = "api-2",
+          uris = { [[/status/(r)]] },
+          upstream_url = helpers.mock_upstream_url .. "/status/200",
+        },
+        {
+          name = "api-3",
+          uris = { [[/(status)]] },
+          upstream_url = helpers.mock_upstream_url .. "/status/200",
+        },
+      }
+
+      helpers.run_migrations()
+      assert(helpers.start_kong({
+        nginx_conf = "spec/fixtures/custom_nginx.template",
+      }))
+    end)
+
+    teardown(function()
+      helpers.stop_kong()
+    end)
+
+    it("depends on created_at field", function()
+      local res = assert(client:send {
+        method  = "GET",
+        path    = "/status/r",
+        headers = { ["kong-debug"] = 1 },
+      })
+      assert.res_status(200, res)
+      assert.equal("api-2", res.headers["kong-api-name"])
+
+      res = assert(client:send {
+        method = "GET",
+        path = "/status/re",
+        headers = { ["kong-debug"] = 1 },
+      })
+      assert.res_status(200, res)
+      assert.equal("api-1", res.headers["kong-api-name"])
+    end)
+  end)
+
   describe("URI arguments (querystring)", function()
 
     setup(function()
